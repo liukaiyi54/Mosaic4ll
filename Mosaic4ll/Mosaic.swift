@@ -12,7 +12,6 @@ import CoreGraphics
 var work_queue = NSMutableArray.init()
 var result_queue = NSMutableArray.init()
 
-
 class Mosaic: NSObject {
     func compose(originImages: (largeImage: NSImage, smallImage: NSImage), tiles: (largeTiles: NSArray, smallTiles: NSArray)) {
         let (largeImage, smallImage) = originImages
@@ -20,7 +19,7 @@ class Mosaic: NSObject {
         let allLargeTilesData = NSMutableArray.init()
         let allSmallTilesData = NSMutableArray.init()
         
-        for i in 0...largeTiles.count {
+        for i in 0...largeTiles.count-1 {
             let largePixels = (largeTiles.object(at: i) as! NSImage).pixelData()
             let smallPixels = (smallTiles.object(at: i) as! NSImage).pixelData()
             allLargeTilesData.add(largePixels)
@@ -29,8 +28,8 @@ class Mosaic: NSObject {
         
         let mosaic = MosaicImage.init(image: largeImage)
         
-        for x in 0...mosaic.xTileCount {
-            for y in 0...mosaic.yTileCount {
+        for x in 0...mosaic.xTileCount-1 {
+            for y in 0...mosaic.yTileCount-1 {
                 let large_box = CGRect(x: x * 50, y: y * 50, width: (x + 1) * 50, height: (y + 1) * 50)
                 let small_box = CGRect(x: x * 10, y: y * 10, width: (x + 1) * 10, height: (y + 1) * 10)
                 let smallImageCropData = cropImage(image: smallImage, rect: small_box)
@@ -38,26 +37,33 @@ class Mosaic: NSObject {
             }
         }
         
+        fitTiles(allSmallTiles: smallTiles)
+        buildMosaic(allLargeTiles: largeTiles, largeImage: largeImage)
     }
     
-    func buildMosaic(allLargeTilesData: NSArray, largeImage: NSImage) {
+    func buildMosaic(allLargeTiles: NSArray, largeImage: NSImage) {
         let mosaic = MosaicImage.init(image: largeImage)
         
+        while result_queue.count > 0 {
+            let (large_box, tileIndex) = result_queue.object(at: 0) as! (CGRect, NSInteger)
+            result_queue.removeObject(at: 0)
+            let tile_data = allLargeTiles[tileIndex] as! NSImage
+            mosaic.addTile(tile: tile_data, _coor: (x: large_box.origin.x, y: large_box.origin.y))
+        }
+        
+        mosaic.image.save()
     }
     
-    func fitTiles(allSmallTilesData: NSArray) {
-        let tileFitter = TileFitter.init(tilesData: allSmallTilesData)
+    func fitTiles(allSmallTiles: NSArray) {
+        let tileFitter = TileFitter.init(tilesData: allSmallTiles)
         
         while work_queue.count > 0 {
             let (smallImageCropData, large_box) = work_queue.object(at: 0) as! (NSImage, CGRect)
             work_queue.removeObject(at: 0)
             let tileIndex = tileFitter.getBestFitTile(image: smallImageCropData)
-            result_queue.add(())
-            
+            result_queue.add((large_box, tileIndex))
         }
     }
-    
-    
 }
 
 class TileProcessor: NSObject {
@@ -115,12 +121,14 @@ class TileFitter: NSObject {
     
     func getTileDiff(image1: NSImage, image2: NSImage, bailOutValue: NSInteger) -> NSInteger {
         var diff = 0
-        let pixel1: NSArray = image1.pixelData() as NSArray
-        let pixel2: NSArray = image2.pixelData() as NSArray
+        let pixel1 = image1.pixelData() as Array
+        let pixel2 = image2.pixelData() as Array
         
-        for i in 0...pixel1.count {
-            let p1 = pixel1.object(at: i) as! Pixel
-            let p2 = pixel2.object(at: i) as! Pixel
+        let minLength = min(pixel1.count, pixel2.count)
+        
+        for i in 0...minLength-1 {
+            let p1 = pixel1[i]
+            let p2 = pixel2[i]
             diff = Int((p1.r-p2.r)*(p1.r-p2.r) + (p1.g-p2.g)*(p1.g-p2.g) + (p1.b-p2.b)*(p1.b-p2.b)) + diff
             if diff > bailOutValue {
                 return diff
@@ -162,9 +170,8 @@ class MosaicImage: NSObject {
     
     func addTile(tile: NSImage, _coor: (x: CGFloat, y: CGFloat)) {
         let (x, y) = _coor
-        let image = NSImage.init(size: CGSize(width: 50, height: 50))
         self.image.lockFocus()
-        image.draw(at: NSMakePoint(x, y), from: NSZeroRect, operation: .copy, fraction: 1.0)
+        tile.draw(at: NSMakePoint(x, y), from: NSZeroRect, operation: .copy, fraction: 1.0)
         self.image.unlockFocus()
     }
 }
@@ -197,20 +204,20 @@ extension NSImage {
     }
     
     func pixelData() -> [Pixel] {
-        let bmp = self.representations[0] as! NSBitmapImageRep
+        let bmp = NSBitmapImageRep.init(data: self.tiffRepresentation!)!
         var data: UnsafeMutablePointer<UInt8> = bmp.bitmapData!
-        var r, g, b, a: UInt8
+        var r, g, b, a: Int
         var pixels: [Pixel] = []
         
         for _ in 0..<bmp.pixelsHigh {
             for _ in 0..<bmp.pixelsWide {
-                r = data.pointee
+                r = Int(data.pointee)
                 data = data.advanced(by: 1)
-                g = data.pointee
+                g = Int(data.pointee)
                 data = data.advanced(by: 1)
-                b = data.pointee
+                b = Int(data.pointee)
                 data = data.advanced(by: 1)
-                a = data.pointee
+                a = Int(data.pointee)
                 data = data.advanced(by: 1)
                 pixels.append(Pixel(r: r, g: g, b: b, a: a))
             }
@@ -233,20 +240,16 @@ extension NSImage {
 }
 
 struct Pixel {
-    var r: UInt8
-    var g: UInt8
-    var b: UInt8
-    var a: UInt8
+    var r: Int
+    var g: Int
+    var b: Int
+    var a: Int
     
-    init(r: UInt8, g: UInt8, b: UInt8, a: UInt8) {
+    init(r: Int, g: Int, b: Int, a: Int) {
         self.r = r
         self.g = g
         self.b = b
         self.a = a
-    }
-    
-    var description: String {
-        return "RGBA(\(r), \(g), \(b), \(a))"
     }
 }
 
