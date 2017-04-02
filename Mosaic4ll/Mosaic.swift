@@ -48,8 +48,7 @@ class Mosaic: NSObject {
             let (large_box, tileIndex) = result_queue.object(at: 0) as! (CGRect, NSInteger)
             result_queue.removeObject(at: 0)
             let tile_data = allLargeTiles[tileIndex] as! NSImage
-            mosaic.addTile(tile: tile_data, coor: (x: large_box.origin.x, y: large_box.origin.y, height: largeImage.size.height-50))
-            //坐标系转化，draw是一左下角为坐标原点
+            mosaic.addTile(tile: tile_data, coor: (x: large_box.origin.x, y: large_box.origin.y, height: largeImage.size.height))
         }
         
         mosaic.image.save()
@@ -76,7 +75,7 @@ class TileProcessor: NSObject {
         let w_crop = (width - min_dimension)/2
         let h_crop = (height - min_dimension)/2
         
-        let crop = CGRect(x: w_crop, y: h_crop, width: width-w_crop, height: height-h_crop)
+        let crop = CGRect(x: w_crop, y: h_crop, width: width-w_crop*2, height: height-h_crop*2)
         let img = cropImage(image: image, rect: crop)
         
         let largeImage = img.resize(width: 50, 50)
@@ -130,6 +129,7 @@ class TileFitter: NSObject {
         for i in 0...minLength-1 {
             let p1 = pixel1[i]
             let p2 = pixel2[i]
+            print(p1)
             diff = Int((p1.r-p2.r)*(p1.r-p2.r) + (p1.g-p2.g)*(p1.g-p2.g) + (p1.b-p2.b)*(p1.b-p2.b)) + diff
             if diff > bailOutValue {
                 return diff
@@ -172,7 +172,8 @@ class MosaicImage: NSObject {
     func addTile(tile: NSImage, coor: (x: CGFloat, y: CGFloat, height: CGFloat)) {
         let (x, y, height) = coor
         self.image.lockFocus()
-        tile.draw(at: NSMakePoint(x, height-y), from: NSZeroRect, operation: .copy, fraction: 1.0)
+        //坐标系转化，draw方法是以左下角为坐标原点，此处改为从左上角为原点
+        tile.draw(at: NSMakePoint(x, height-y-50), from: NSZeroRect, operation: .copy, fraction: 1.0)
         self.image.unlockFocus()
     }
 }
