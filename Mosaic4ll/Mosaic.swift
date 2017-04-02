@@ -27,12 +27,13 @@ class Mosaic: NSObject {
 //        }
         
         let mosaic = MosaicImage.init(image: largeImage)
-        
+        smallImage.save()
         for x in 0...mosaic.xTileCount-1 {
             for y in 0...mosaic.yTileCount-1 {
-                let large_box = CGRect(x: x * 50, y: y * 50, width: (x + 1) * 50, height: (y + 1) * 50)
-                let small_box = CGRect(x: x * 10, y: y * 10, width: (x + 1) * 10, height: (y + 1) * 10)
+                let large_box = CGRect(x: x * 50, y: y * 50, width: 50, height: 50)
+                let small_box = CGRect(x: x * 10, y: y * 10, width: 10, height: 10)
                 let smallImageCropData = cropImage(image: smallImage, rect: small_box)
+//                smallImageCropData.save()
                 work_queue.add((smallImageCropData, large_box))
             }
         }
@@ -123,13 +124,11 @@ class TileFitter: NSObject {
         var diff = 0
         let pixel1 = image1.pixelData() as Array
         let pixel2 = image2.pixelData() as Array
-        
         let minLength = min(pixel1.count, pixel2.count)
         
         for i in 0...minLength-1 {
             let p1 = pixel1[i]
             let p2 = pixel2[i]
-            print(p1)
             diff = Int((p1.r-p2.r)*(p1.r-p2.r) + (p1.g-p2.g)*(p1.g-p2.g) + (p1.b-p2.b)*(p1.b-p2.b)) + diff
             if diff > bailOutValue {
                 return diff
@@ -199,7 +198,7 @@ extension NSImage {
             let second = calendar.component(.second, from: date)
             let random = arc4random()%1000
             let time = "\(hour)-\(minutes)-\(second).\(random)"
-            try imageData?.write(to: NSURL.init(string: "file:///Users/Michael/Desktop/\(time).jpeg") as! URL)
+            try imageData?.write(to: NSURL.init(string: "file:///Users/Michael/Desktop/image/\(time).jpeg") as! URL)
         } catch {
             print(error)
         }
