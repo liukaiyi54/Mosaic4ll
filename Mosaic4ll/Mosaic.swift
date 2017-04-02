@@ -16,15 +16,15 @@ class Mosaic: NSObject {
     func compose(originImages: (largeImage: NSImage, smallImage: NSImage), tiles: (largeTiles: NSArray, smallTiles: NSArray)) {
         let (largeImage, smallImage) = originImages
         let (largeTiles, smallTiles) = tiles
-        let allLargeTilesData = NSMutableArray.init()
-        let allSmallTilesData = NSMutableArray.init()
+//        let allLargeTilesData = NSMutableArray.init()
+//        let allSmallTilesData = NSMutableArray.init()
         
-        for i in 0...largeTiles.count-1 {
-            let largePixels = (largeTiles.object(at: i) as! NSImage).pixelData()
-            let smallPixels = (smallTiles.object(at: i) as! NSImage).pixelData()
-            allLargeTilesData.add(largePixels)
-            allSmallTilesData.add(smallPixels)
-        }
+//        for i in 0...largeTiles.count-1 {
+//            let largePixels = (largeTiles.object(at: i) as! NSImage).pixelData()
+//            let smallPixels = (smallTiles.object(at: i) as! NSImage).pixelData()
+//            allLargeTilesData.add(largePixels)
+//            allSmallTilesData.add(smallPixels)
+//        }
         
         let mosaic = MosaicImage.init(image: largeImage)
         
@@ -48,7 +48,8 @@ class Mosaic: NSObject {
             let (large_box, tileIndex) = result_queue.object(at: 0) as! (CGRect, NSInteger)
             result_queue.removeObject(at: 0)
             let tile_data = allLargeTiles[tileIndex] as! NSImage
-            mosaic.addTile(tile: tile_data, _coor: (x: large_box.origin.x, y: large_box.origin.y))
+            mosaic.addTile(tile: tile_data, coor: (x: large_box.origin.x, y: large_box.origin.y, height: largeImage.size.height-50))
+            //坐标系转化，draw是一左下角为坐标原点
         }
         
         mosaic.image.save()
@@ -103,9 +104,9 @@ class TargetImage: NSObject {
         var largeImage = image
         let width_diff = width.truncatingRemainder(dividingBy: 50)/2
         let height_diff = height.truncatingRemainder(dividingBy: 50)/2
-        if width_diff > 1 || height_diff > 1 {
-            let img = cropImage(image: image, rect: CGRect(x: width_diff, y: height_diff, width: width-width_diff, height: height-height_diff))
-            largeImage = img.resize(width: width, height)
+        if width_diff > 0 || height_diff > 0 {
+            let img = cropImage(image: image, rect: CGRect(x: width_diff, y: height_diff, width: width-width_diff*2, height: height-height_diff*2))
+            largeImage = img
         }
         let smallImage = image.resize(width: width/10, height/10)
         
@@ -168,10 +169,10 @@ class MosaicImage: NSObject {
         self.totalTiles = self.xTileCount * self.yTileCount
     }
     
-    func addTile(tile: NSImage, _coor: (x: CGFloat, y: CGFloat)) {
-        let (x, y) = _coor
+    func addTile(tile: NSImage, coor: (x: CGFloat, y: CGFloat, height: CGFloat)) {
+        let (x, y, height) = coor
         self.image.lockFocus()
-        tile.draw(at: NSMakePoint(x, y), from: NSZeroRect, operation: .copy, fraction: 1.0)
+        tile.draw(at: NSMakePoint(x, height-y), from: NSZeroRect, operation: .copy, fraction: 1.0)
         self.image.unlockFocus()
     }
 }
