@@ -1,6 +1,6 @@
 # Mosaic4ll
 
-Create a mosaic image using small tiles which looks like this.
+Create a mosaic image using small tiles.
 > small tiles mean small images cropped from other images.
 
 ![a](http://i1.piimg.com/4851/8bd7eb202d6ca569.jpg)
