@@ -16,43 +16,32 @@ class Mosaic: NSObject {
     func compose(originImages: (largeImage: NSImage, smallImage: NSImage), tiles: (largeTiles: NSArray, smallTiles: NSArray)) {
         let (largeImage, smallImage) = originImages
         let (largeTiles, smallTiles) = tiles
-//        let allLargeTilesData = NSMutableArray.init()
-//        let allSmallTilesData = NSMutableArray.init()
         
-//        for i in 0...largeTiles.count-1 {
-//            let largePixels = (largeTiles.object(at: i) as! NSImage).pixelData()
-//            let smallPixels = (smallTiles.object(at: i) as! NSImage).pixelData()
-//            allLargeTilesData.add(largePixels)
-//            allSmallTilesData.add(smallPixels)
-//        }
-        
-        let mosaic = MosaicImage.init(image: largeImage)
-        smallImage.save()
+        let mosaic = MosaicImage.init(size: largeImage.size)
         for x in 0...mosaic.xTileCount-1 {
             for y in 0...mosaic.yTileCount-1 {
                 let large_box = CGRect(x: x * 50, y: y * 50, width: 50, height: 50)
                 let small_box = CGRect(x: x * 10, y: y * 10, width: 10, height: 10)
                 let smallImageCropData = cropImage(image: smallImage, rect: small_box)
-//                smallImageCropData.save()
                 work_queue.add((smallImageCropData, large_box))
             }
         }
         
-        fitTiles(allSmallTiles: smallTiles)
-        buildMosaic(allLargeTiles: largeTiles, largeImage: largeImage)
+        let operationQueue = OperationQueue.main
+        let operation: BlockOperation = BlockOperation (block: {
+            self.fitTiles(allSmallTiles: smallTiles)
+            let anotherOperation: BlockOperation = BlockOperation (block: {
+                self.buildMosaic(allLargeTiles: largeTiles, largeImage: largeImage)
+            })
+            operationQueue.addOperation(anotherOperation)
+        })
+        operationQueue.addOperation(operation)
+        
     }
     
     func buildMosaic(allLargeTiles: NSArray, largeImage: NSImage) {
-        let mosaic = MosaicImage.init(image: largeImage)
-        
-        while result_queue.count > 0 {
-            let (large_box, tileIndex) = result_queue.object(at: 0) as! (CGRect, NSInteger)
-            result_queue.removeObject(at: 0)
-            let tile_data = allLargeTiles[tileIndex] as! NSImage
-            mosaic.addTile(tile: tile_data, coor: (x: large_box.origin.x, y: large_box.origin.y, height: largeImage.size.height))
-        }
-        
-        mosaic.image.save()
+        let mosaic = MosaicImage.init(size: largeImage.size)
+        mosaic.addTileAndSave(tiles: allLargeTiles)
     }
     
     func fitTiles(allSmallTiles: NSArray) {
@@ -68,7 +57,6 @@ class Mosaic: NSObject {
 }
 
 class TileProcessor: NSObject {
-//    var tile_image: NSImage
     func processTile(image: NSImage) -> NSArray {
         let width = image.size.width
         let height = image.size.height
@@ -159,21 +147,36 @@ class ProgressCounter: NSObject {
 }
 
 class MosaicImage: NSObject {
-    var image: NSImage
+    var size: NSSize
     var xTileCount: Int, yTileCount:Int, totalTiles:Int
-    init(image: NSImage) {
-        self.image = NSImage.init(size: image.size)
-        self.xTileCount = (Int)(image.size.width / 50)
-        self.yTileCount = (Int)(image.size.height / 50)
+    init(size: NSSize) {
+        self.size = size
+        self.xTileCount = (Int)(size.width / 50)
+        self.yTileCount = (Int)(size.height / 50)
         self.totalTiles = self.xTileCount * self.yTileCount
     }
     
-    func addTile(tile: NSImage, coor: (x: CGFloat, y: CGFloat, height: CGFloat)) {
-        let (x, y, height) = coor
-        self.image.lockFocus()
-        //坐标系转化，draw方法是以左下角为坐标原点，此处改为从左上角为原点
-        tile.draw(at: NSMakePoint(x, height-y-50), from: NSZeroRect, operation: .copy, fraction: 1.0)
-        self.image.unlockFocus()
+    func addTileAndSave(tiles: NSArray) {
+        let bitmap = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: Int(self.size.width), pixelsHigh: Int(self.size.height), bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false, colorSpaceName: NSDeviceRGBColorSpace, bytesPerRow: 0, bitsPerPixel: 0)!
+        bitmap.size = self.size
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.setCurrent(NSGraphicsContext(bitmapImageRep: bitmap))
+        
+        while result_queue.count > 0 {
+            let (large_box, tileIndex) = result_queue.object(at: 0) as! (CGRect, NSInteger)
+            result_queue.removeObject(at: 0)
+            let tileData = tiles[tileIndex] as! NSImage
+            tileData.draw(at: NSMakePoint(large_box.origin.x, self.size.height - large_box.origin.y - 50), from: NSZeroRect, operation: .copy, fraction: 1.0)
+            //坐标系转化，draw方法是以左下角为坐标原点，此处改为从左上角为原点
+        }
+        NSGraphicsContext.restoreGraphicsState()
+        
+        let imageData = bitmap.representation(using: NSJPEGFileType, properties: [NSImageCompressionFactor: 0.5])!
+        do {
+           try imageData.write(to: NSURL.init(string: "file:///Users/Michael/Desktop/image/mosaic.jpeg") as! URL)
+        } catch {
+            print(error)
+        }
     }
 }
 
@@ -188,7 +191,7 @@ extension NSImage {
     func save() {
         var imageData = self.tiffRepresentation
         let imageRef = NSBitmapImageRep.init(data: imageData!)
-        let imageProps = NSDictionary.init(object: NSNumber.init(value: 1.0), forKey: NSImageCompressionFactor as NSCopying)
+        let imageProps = NSDictionary.init(object: NSNumber.init(value: 0.5), forKey: NSImageCompressionFactor as NSCopying)
         imageData = imageRef?.representation(using: NSJPEGFileType, properties: imageProps as! [String : Any])
         do {
             let date = Date()

@@ -30,10 +30,11 @@ class ViewController: NSViewController {
             images.add(img!)
         }
         let processor = TileProcessor()
+        
         let tiles_data = processor.getTiles(tiles: images)
         
         let targetImage = TargetImage()
-        let image_data = targetImage.getImageData(image: NSImage.init(named: "6")!)
+        let image_data = targetImage.getImageData(image: NSImage.init(named: "one")!)
         
         let mosaic = Mosaic()
         mosaic.compose(originImages: image_data, tiles: tiles_data)
