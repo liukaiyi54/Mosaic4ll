@@ -46,11 +46,11 @@ class Mosaic: NSObject {
     
     func fitTiles(allSmallTiles: NSArray) {
         let tileFitter = TileFitter.init(tilesData: allSmallTiles)
-        
+        let allTilesPixelData = tileFitter.getAllTilesPixelData(tiles: allSmallTiles)
         while work_queue.count > 0 {
             let (smallImageCropData, large_box) = work_queue.object(at: 0) as! (NSImage, CGRect)
             work_queue.removeObject(at: 0)
-            let tileIndex = tileFitter.getBestFitTile(image: smallImageCropData)
+            let tileIndex = tileFitter.getBestFitTile(image: smallImageCropData, allTiles: allTilesPixelData)
             result_queue.add((large_box, tileIndex))
         }
     }
@@ -108,15 +108,15 @@ class TileFitter: NSObject {
         self.tilesData = tilesData
     }
     
-    func getTileDiff(image1: NSImage, image2: NSImage, bailOutValue: NSInteger) -> NSInteger {
+    func getTileDiff(imagePixelData: [Pixel], tilePixelData: NSArray, bailOutValue: NSInteger) -> NSInteger {
         var diff = 0
-        let pixel1 = image1.pixelData() as Array
-        let pixel2 = image2.pixelData() as Array
+        let pixel1 = imagePixelData
+        let pixel2 = tilePixelData
         let minLength = min(pixel1.count, pixel2.count)
         
         for i in 0...minLength-1 {
             let p1 = pixel1[i]
-            let p2 = pixel2[i]
+            let p2 = pixel2[i] as! Pixel
             diff = Int((p1.r-p2.r)*(p1.r-p2.r) + (p1.g-p2.g)*(p1.g-p2.g) + (p1.b-p2.b)*(p1.b-p2.b)) + diff
             if diff > bailOutValue {
                 return diff
@@ -125,20 +125,33 @@ class TileFitter: NSObject {
         return diff
     }
     
-    func getBestFitTile(image: NSImage) -> NSInteger {
+    func getBestFitTile(image: NSImage, allTiles: NSArray) -> NSInteger {
         var bestFitTileIndex = 0
         var minDiff = Int.max
         var tileIndex = 0
+    
+        let allTilesPixelData = allTiles
+        let imagePixelData = image.pixelData()
         
-        for tileData in self.tilesData {
-            let diff = self.getTileDiff(image1: image, image2: tileData as! NSImage, bailOutValue: minDiff)
+        for tilePixel in allTilesPixelData {
+            let diff = getTileDiff(imagePixelData: imagePixelData, tilePixelData: tilePixel as! NSArray, bailOutValue: minDiff)
             if diff < minDiff {
                 minDiff = diff
                 bestFitTileIndex = tileIndex
             }
             tileIndex += 1
         }
+        
         return bestFitTileIndex
+    }
+    
+    func getAllTilesPixelData(tiles: NSArray) -> NSArray {
+        let allTilesPixelData = NSMutableArray.init()
+        for tile in tiles {
+            let pixel = (tile as! NSImage).pixelData()
+            allTilesPixelData.add(pixel)
+        }
+        return allTilesPixelData
     }
 }
 
