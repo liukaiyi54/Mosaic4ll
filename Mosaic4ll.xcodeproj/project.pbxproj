@@ -22,6 +22,7 @@
 		4C8430911E8DE6F2008ABE0E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4C8430931E8DE6F2008ABE0E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C8430991E8DE8B7008ABE0E /* Mosaic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mosaic.swift; sourceTree = "<group>"; };
+		4CA7FC2B1E94E5C40050A6F8 /* Mosaic4ll.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Mosaic4ll.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +55,7 @@
 		4C8430891E8DE6F2008ABE0E /* Mosaic4ll */ = {
 			isa = PBXGroup;
 			children = (
+				4CA7FC2B1E94E5C40050A6F8 /* Mosaic4ll.entitlements */,
 				4C84308A1E8DE6F2008ABE0E /* AppDelegate.swift */,
 				4C84308C1E8DE6F2008ABE0E /* ViewController.swift */,
 				4C8430991E8DE8B7008ABE0E /* Mosaic.swift */,
@@ -98,6 +100,14 @@
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = JTVP4Z7968;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.Mac = {
+								enabled = 0;
+							};
+							com.apple.Sandbox = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -250,6 +260,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Mosaic4ll/Mosaic4ll.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = JTVP4Z7968;
 				INFOPLIST_FILE = Mosaic4ll/Info.plist;
@@ -264,6 +275,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Mosaic4ll/Mosaic4ll.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = JTVP4Z7968;
 				INFOPLIST_FILE = Mosaic4ll/Info.plist;
@@ -293,6 +305,7 @@
 				4C8430981E8DE6F2008ABE0E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

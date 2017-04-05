@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16E192b" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16F43c" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
@@ -687,29 +687,53 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Py6-01-U2W">
-                                <rect key="frame" x="46" y="117" width="71" height="32"/>
-                                <buttonCell key="cell" type="push" title="open" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gNG-PL-qEr">
+                                <rect key="frame" x="14" y="222" width="117" height="32"/>
+                                <buttonCell key="cell" type="push" title="select target" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gNG-PL-qEr">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="didTapOpen:" target="XfG-lQ-9wD" id="Du9-eo-PTU"/>
+                                    <action selector="selectTarget:" target="XfG-lQ-9wD" id="lhW-Kf-lSe"/>
                                 </connections>
                             </button>
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7jZ-bz-wSe">
-                                <rect key="frame" x="216" y="111" width="48" height="48"/>
+                                <rect key="frame" x="20" y="41" width="112" height="168"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="48" id="580-fy-YCq"/>
-                                    <constraint firstAttribute="height" constant="48" id="RmQ-a0-eGW"/>
+                                    <constraint firstAttribute="width" constant="112" id="580-fy-YCq"/>
+                                    <constraint firstAttribute="height" constant="168" id="RmQ-a0-eGW"/>
                                 </constraints>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="gQq-XJ-ife"/>
                             </imageView>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XiO-ko-sHu">
+                                <rect key="frame" x="187" y="222" width="106" height="32"/>
+                                <buttonCell key="cell" type="push" title="select tiles" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="aLB-1r-ksz">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="selectTiles:" target="XfG-lQ-9wD" id="Aak-kS-64I"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hID-Tt-MGw">
+                                <rect key="frame" x="370" y="222" width="96" height="32"/>
+                                <buttonCell key="cell" type="push" title="compose" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="xtt-Nr-Wmn">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="compose:" target="XfG-lQ-9wD" id="5vS-nz-tbH"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="Py6-01-U2W" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="52" id="A1d-4i-gOY"/>
-                            <constraint firstItem="7jZ-bz-wSe" firstAttribute="centerY" secondItem="m2S-Jp-Qdl" secondAttribute="centerY" id="SD0-22-tjg"/>
-                            <constraint firstItem="Py6-01-U2W" firstAttribute="centerY" secondItem="m2S-Jp-Qdl" secondAttribute="centerY" id="VCc-ZG-LdK"/>
-                            <constraint firstItem="7jZ-bz-wSe" firstAttribute="centerX" secondItem="m2S-Jp-Qdl" secondAttribute="centerX" id="YkA-Cg-2ok"/>
+                            <constraint firstItem="XiO-ko-sHu" firstAttribute="centerX" secondItem="m2S-Jp-Qdl" secondAttribute="centerX" id="51t-sG-tY6"/>
+                            <constraint firstItem="Py6-01-U2W" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" id="A1d-4i-gOY"/>
+                            <constraint firstItem="Py6-01-U2W" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" id="H6z-yC-o5Z"/>
+                            <constraint firstItem="XiO-ko-sHu" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" id="LFf-A1-8KT"/>
+                            <constraint firstItem="7jZ-bz-wSe" firstAttribute="centerY" secondItem="m2S-Jp-Qdl" secondAttribute="centerY" constant="10" id="SD0-22-tjg"/>
+                            <constraint firstItem="7jZ-bz-wSe" firstAttribute="centerX" secondItem="m2S-Jp-Qdl" secondAttribute="centerX" constant="-164" id="YkA-Cg-2ok"/>
+                            <constraint firstAttribute="trailing" secondItem="hID-Tt-MGw" secondAttribute="trailing" constant="20" id="gqE-0h-WjQ"/>
+                            <constraint firstItem="hID-Tt-MGw" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" id="tTX-xx-i1Z"/>
                         </constraints>
                     </view>
                     <connections>
