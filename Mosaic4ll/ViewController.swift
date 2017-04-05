@@ -16,7 +16,7 @@ class ViewController: NSViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        label.stringValue = " "
     }
 
     override var representedObject: Any? {
@@ -26,6 +26,8 @@ class ViewController: NSViewController {
     }
     
     @IBOutlet weak var imageView: NSImageView!
+    @IBOutlet weak var label: NSTextField!
+    
     
     @IBAction func selectTarget(_ sender: NSButton) {
         let openPanel = NSOpenPanel();
@@ -77,6 +79,7 @@ class ViewController: NSViewController {
                     let image = NSImage.init(contentsOfFile: url.path)
                     ViewController.Variables.tiles.add(image!)
                 }
+                self.label.stringValue = "added \(openPanel.urls.count) tiles"
             }
         }
     }

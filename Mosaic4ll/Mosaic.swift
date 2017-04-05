@@ -203,8 +203,6 @@ class MosaicImage: NSObject {
 }
 
 func cropImage(image: CGImage, rect: CGRect) -> NSImage {
-//    let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil)
-//    let img = cgImage?.cropping(to: rect)
     let img = image.cropping(to: rect)
     return NSImage.init(cgImage: img!, size: rect.size)
 }
