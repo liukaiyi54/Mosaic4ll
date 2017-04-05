@@ -25,7 +25,7 @@ class ViewController: NSViewController {
     
     @IBAction func didTapOpen(_ sender: NSButton) {
         let images = NSMutableArray.init()
-        for i in 2...16 {
+        for i in 1...43 {
             let img = NSImage.init(named: "\(i)")
             images.add(img!)
         }

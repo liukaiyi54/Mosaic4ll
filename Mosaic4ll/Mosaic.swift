@@ -18,16 +18,24 @@ class Mosaic: NSObject {
         let (largeTiles, smallTiles) = tiles
         
         let mosaic = MosaicImage.init(size: largeImage.size)
-        for x in 0...mosaic.xTileCount-1 {
-            for y in 0...mosaic.yTileCount-1 {
-                let large_box = CGRect(x: x * 50, y: y * 50, width: 50, height: 50)
-                let small_box = CGRect(x: x * 10, y: y * 10, width: 10, height: 10)
-                let smallImageCropData = cropImage(image: smallImage, rect: small_box)
-                work_queue.add((smallImageCropData, large_box))
-            }
-        }
         
         let operationQueue = OperationQueue.main
+        operationQueue.maxConcurrentOperationCount = 3
+        
+        
+        let cgImage = smallImage.cgImage(forProposedRect: nil, context: nil, hints: nil)!
+        let op = BlockOperation (block: {
+            for x in 0...mosaic.xTileCount-1 {
+                for y in 0...mosaic.yTileCount-1 {
+                    let large_box = CGRect(x: x * 50, y: y * 50, width: 50, height: 50)
+                    let small_box = CGRect(x: x * 10, y: y * 10, width: 10, height: 10)
+                    let smallImageCropData = cropImage(image: cgImage, rect: small_box)
+                    work_queue.add((smallImageCropData, large_box))
+                }
+            }
+        })
+        operationQueue.addOperation(op)
+        
         let operation: BlockOperation = BlockOperation (block: {
             self.fitTiles(allSmallTiles: smallTiles)
             let anotherOperation: BlockOperation = BlockOperation (block: {
@@ -65,7 +73,7 @@ class TileProcessor: NSObject {
         let h_crop = (height - min_dimension)/2
         
         let crop = CGRect(x: w_crop, y: h_crop, width: width-w_crop*2, height: height-h_crop*2)
-        let img = cropImage(image: image, rect: crop)
+        let img = cropImage(image: image.cgImage(forProposedRect: nil, context: nil, hints: nil)!, rect: crop)
         
         let largeImage = img.resize(width: 50, 50)
         let smallImage = img.resize(width: 5, 5)
@@ -87,13 +95,13 @@ class TileProcessor: NSObject {
 
 class TargetImage: NSObject {
     func getImageData(image: NSImage) -> (largeImage: NSImage, smallImage: NSImage) {
-        let width = image.size.width
-        let height = image.size.height
+        let width = image.size.width*8
+        let height = image.size.height*8
         var largeImage = image
         let width_diff = width.truncatingRemainder(dividingBy: 50)/2
         let height_diff = height.truncatingRemainder(dividingBy: 50)/2
         if width_diff > 0 || height_diff > 0 {
-            let img = cropImage(image: image, rect: CGRect(x: width_diff, y: height_diff, width: width-width_diff*2, height: height-height_diff*2))
+            let img = cropImage(image: image.cgImage(forProposedRect: nil, context: nil, hints: nil)!, rect: CGRect(x: width_diff, y: height_diff, width: width-width_diff*2, height: height-height_diff*2))
             largeImage = img
         }
         let smallImage = image.resize(width: width/10, height/10)
@@ -147,6 +155,7 @@ class TileFitter: NSObject {
     
     func getAllTilesPixelData(tiles: NSArray) -> NSArray {
         let allTilesPixelData = NSMutableArray.init()
+        
         for tile in tiles {
             let pixel = (tile as! NSImage).pixelData()
             allTilesPixelData.add(pixel)
@@ -193,10 +202,10 @@ class MosaicImage: NSObject {
     }
 }
 
-func cropImage(image: NSImage, rect: CGRect) -> NSImage {
-    let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil)
-    let img = cgImage?.cropping(to: rect)
-    
+func cropImage(image: CGImage, rect: CGRect) -> NSImage {
+//    let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil)
+//    let img = cgImage?.cropping(to: rect)
+    let img = image.cropping(to: rect)
     return NSImage.init(cgImage: img!, size: rect.size)
 }
 
@@ -239,6 +248,7 @@ extension NSImage {
                 pixels.append(Pixel(r: r, g: g, b: b, a: a))
             }
         }
+        data.deinitialize()
         
         return pixels
     }
