@@ -19,7 +19,7 @@ class Mosaic: NSObject {
         
         let mosaic = MosaicImage.init(size: largeImage.size)
         
-        let operationQueue = OperationQueue.main
+        let operationQueue = OperationQueue.init()
         operationQueue.maxConcurrentOperationCount = 3
         
         
@@ -95,8 +95,8 @@ class TileProcessor: NSObject {
 
 class TargetImage: NSObject {
     func getImageData(image: NSImage) -> (largeImage: NSImage, smallImage: NSImage) {
-        let width = image.size.width*8
-        let height = image.size.height*8
+        let width = image.size.width*4
+        let height = image.size.height*4
         var largeImage = image
         let width_diff = width.truncatingRemainder(dividingBy: 50)/2
         let height_diff = height.truncatingRemainder(dividingBy: 50)/2
@@ -195,10 +195,10 @@ class MosaicImage: NSObject {
         
         let imageData = bitmap.representation(using: NSJPEGFileType, properties: [NSImageCompressionFactor: 0.5])!
         do {
-            let filePath = "file:///Users/Michael/Pictures/mosaic.jpeg"
+            let filePath = "file:///Users/"+NSUserName()+"/Pictures/mosaic.jpeg"
             try imageData.write(to: NSURL.init(string: filePath) as! URL)
             let workspace = NSWorkspace.shared()
-            workspace.openFile(filePath)
+            workspace.openFile(NSHomeDirectory()+"/Pictures/mosaic.jpeg")
         } catch {
             print(error)
         }
