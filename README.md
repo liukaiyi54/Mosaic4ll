@@ -6,7 +6,9 @@ Create a mosaic image using small tiles.
 ![a](http://i1.piimg.com/4851/8bd7eb202d6ca569.jpg)
 
 Todo:
-1. 内存优化
-2. 内存优化
-3. 内存优化
-4. UI修整  
+* [x]  内存优化
+* [x]  内存优化
+* [ ]  内存优化
+* [ ]  UI修整
+* [ ]  性能优化
+* [ ]  交互优化
