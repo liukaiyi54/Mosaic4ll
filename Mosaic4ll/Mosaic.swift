@@ -13,13 +13,13 @@ var work_queue = NSMutableArray()
 var result_queue = NSMutableArray()
 
 class Mosaic: NSObject {
+    let operationQueue = OperationQueue()
+
     func compose(originImages: (largeImage: NSImage, smallImage: NSImage), tiles: (largeTiles: NSArray, smallTiles: NSArray)) {
         let (largeImage, smallImage) = originImages
         let (largeTiles, smallTiles) = tiles
         
         let mosaic = MosaicImage(size: largeImage.size)
-        
-        let operationQueue = OperationQueue()
         
         let cgImage = smallImage.cgImage(forProposedRect: nil, context: nil, hints: nil)!
         let op = BlockOperation (block: {
@@ -34,15 +34,20 @@ class Mosaic: NSObject {
         })
         operationQueue.addOperation(op)
         
-        let operation: BlockOperation = BlockOperation (block: {
-            self.fitTiles(allSmallTiles: smallTiles)
-            let anotherOperation: BlockOperation = BlockOperation (block: {
-                self.buildMosaic(allLargeTiles: largeTiles, largeImage: largeImage)
-            })
-            operationQueue.addOperation(anotherOperation)
-        })
-        operationQueue.addOperation(operation)
-        
+        let mosaicBuildPrework = MosaicBuildPrework(allTiles: smallTiles)
+        mosaicBuildPrework.name = "Prework"
+        mosaicBuildPrework.completionBlock = {
+            if mosaicBuildPrework.isCancelled {
+                return
+            }
+            
+            self.buildMosaic(allLargeTiles: largeTiles, largeImage: largeImage)
+        }
+        operationQueue.addOperation(mosaicBuildPrework)
+    }
+    
+    func cancelOperation() {
+        operationQueue.cancelAllOperations()
     }
     
     func buildMosaic(allLargeTiles: NSArray, largeImage: NSImage) {
@@ -62,8 +67,33 @@ class Mosaic: NSObject {
     }
 }
 
+class MosaicBuildPrework: Operation {
+    var allTiles: NSArray
+    init(allTiles: NSArray) {
+        self.allTiles = allTiles
+    }
+    
+    override func main() {
+        if self.isCancelled {
+            return;
+        }
+        
+        let tileFitter = TileFitter(tilesData: self.allTiles)
+        let allTilesPixelData = tileFitter.getAllTilesPixelData(tiles: self.allTiles)
+        while work_queue.count > 0 {
+            if self.isCancelled {
+                return
+            }
+            let (smallImageCropImage, large_box) = work_queue.object(at: 0) as! (NSImage, CGRect)
+            work_queue.removeObject(at: 0)
+            let tileIndex = tileFitter.getBestFitTile(image: smallImageCropImage, allTiles: allTilesPixelData)
+            result_queue.add((large_box, tileIndex))
+        }
+    }
+}
+
 class TileProcessor: NSObject {
-    func processTile(image: NSImage) -> NSArray {
+    func processTile(image: NSImage) -> (NSImage, NSImage) {
         let width = image.size.width
         let height = image.size.height
         let min_dimension = min(width, height)
@@ -76,16 +106,16 @@ class TileProcessor: NSObject {
         let largeImage = img.resize(width: 50, 50)
         let smallImage = img.resize(width: 5, 5)
         
-        return [largeImage, smallImage]
+        return (largeImage, smallImage)
     }
     
     func getTiles(tiles: NSArray) -> (largeTiles: NSArray, smallTiles: NSArray) {
         let large_tiles = NSMutableArray()
         let small_tiles = NSMutableArray()
         for tile in tiles {
-            let tilesArray = processTile(image: tile as! NSImage)
-            large_tiles.add(tilesArray.firstObject!)
-            small_tiles.add(tilesArray.lastObject!)
+            let (largeImage, smallImage) = processTile(image: tile as! NSImage)
+            large_tiles.add(largeImage)
+            small_tiles.add(smallImage)
         }
         return (large_tiles.copy() as! NSArray, small_tiles.copy() as! NSArray)
     }
@@ -114,7 +144,7 @@ class TileFitter: NSObject {
         self.tilesData = tilesData
     }
     
-    func getTileDiff(imagePixelData: [Pixel], tilePixelData: NSArray, bailOutValue: NSInteger) -> NSInteger {
+    private func getTileDiff(imagePixelData: [Pixel], tilePixelData: NSArray, bailOutValue: NSInteger) -> NSInteger {
         var diff = 0
         let pixel1 = imagePixelData
         let pixel2 = tilePixelData
@@ -193,7 +223,7 @@ class MosaicImage: NSObject {
         
         let imageData = bitmap.representation(using: NSJPEGFileType, properties: [NSImageCompressionFactor: 0.5])!
         do {
-            let filePath = "file:///Users/"+NSUserName()+"/Pictures/mosaic.jpeg"
+            let filePath = "file://"+NSHomeDirectory()+"/Pictures/mosaic.jpeg"
             try imageData.write(to: NSURL(string: filePath) as! URL)
             let workspace = NSWorkspace.shared()
             workspace.openFile(NSHomeDirectory()+"/Pictures/mosaic.jpeg")
@@ -209,25 +239,6 @@ func cropImage(image: CGImage, rect: CGRect) -> NSImage {
 }
 
 extension NSImage {
-    func save() {
-        var imageData = self.tiffRepresentation
-        let imageRef = NSBitmapImageRep(data: imageData!)
-        let imageProps = NSDictionary(object: NSNumber(value: 0.5), forKey: NSImageCompressionFactor as NSCopying)
-        imageData = imageRef?.representation(using: NSJPEGFileType, properties: imageProps as! [String : Any])
-        do {
-            let date = Date()
-            let calendar = Calendar.current
-            let hour = calendar.component(.hour, from: date)
-            let minutes = calendar.component(.minute, from: date)
-            let second = calendar.component(.second, from: date)
-            let random = arc4random()%1000
-            let time = "\(hour)-\(minutes)-\(second).\(random)"
-            try imageData?.write(to: NSURL(string: "file:///Users/Michael/Desktop/image/\(time).jpeg") as! URL)
-        } catch {
-            print(error)
-        }
-    }
-    
     func pixelData() -> [Pixel] {
         let bmp = NSBitmapImageRep(data: self.tiffRepresentation!)!
         var data: UnsafeMutablePointer<UInt8> = bmp.bitmapData!

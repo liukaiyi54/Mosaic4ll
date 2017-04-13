@@ -27,6 +27,7 @@ class ViewController: NSViewController {
     
     @IBOutlet weak var imageView: NSImageView!
     @IBOutlet weak var label: NSTextField!
+    let progressIndicator = NSProgressIndicator()
     
     
     @IBAction func selectTarget(_ sender: NSButton) {
