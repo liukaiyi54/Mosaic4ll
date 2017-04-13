@@ -55,14 +55,36 @@ class ViewController: NSViewController {
             return
         }
         
+        let mosaic = Mosaic()
+        
+        let alert = NSAlert()
+        alert.messageText = "Composing..."
+        alert.informativeText = "Just so you know, this may take a while"
+        alert.addButton(withTitle: "Cancel")
+        alert.alertStyle = .informational
+        alert.beginSheetModal(for: self.view.window!) { (reponse) in
+            if reponse == 1000 && alert.buttons[0].title == "Cancel"{
+                mosaic.cancelOperation()
+            }
+        }
+        
         let processor = TileProcessor()
         let tiles_data = processor.getTiles(tiles: ViewController.Variables.tiles)
         
         let targetImage = TargetImage()
         let image_data = targetImage.getImageData(image: ViewController.Variables.targetImage!)
         
-        let mosaic = Mosaic()
-        mosaic.compose(originImages: image_data, tiles: tiles_data)
+
+        mosaic.compose(originImages: image_data, tiles: tiles_data, complete: {
+            let operationQueue = OperationQueue.main
+            let operation = BlockOperation (block: {
+                alert.messageText = "Finished!"
+                alert.informativeText = ""
+                let button = alert.buttons[0]
+                button.title = "OK"
+            })
+            operationQueue.addOperation(operation)
+        })
     }
     
     @IBAction func selectTiles(_ sender: NSButton) {

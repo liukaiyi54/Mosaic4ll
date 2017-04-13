@@ -15,7 +15,7 @@ var result_queue = NSMutableArray()
 class Mosaic: NSObject {
     let operationQueue = OperationQueue()
 
-    func compose(originImages: (largeImage: NSImage, smallImage: NSImage), tiles: (largeTiles: NSArray, smallTiles: NSArray)) {
+    func compose(originImages: (largeImage: NSImage, smallImage: NSImage), tiles: (largeTiles: NSArray, smallTiles: NSArray), complete: @escaping () -> Void) {
         let (largeImage, smallImage) = originImages
         let (largeTiles, smallTiles) = tiles
         
@@ -42,6 +42,7 @@ class Mosaic: NSObject {
             }
             
             self.buildMosaic(allLargeTiles: largeTiles, largeImage: largeImage)
+            complete()
         }
         operationQueue.addOperation(mosaicBuildPrework)
     }
