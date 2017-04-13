@@ -9,19 +9,17 @@
 import Cocoa
 import CoreGraphics
 
-var work_queue = NSMutableArray.init()
-var result_queue = NSMutableArray.init()
+var work_queue = NSMutableArray()
+var result_queue = NSMutableArray()
 
 class Mosaic: NSObject {
     func compose(originImages: (largeImage: NSImage, smallImage: NSImage), tiles: (largeTiles: NSArray, smallTiles: NSArray)) {
         let (largeImage, smallImage) = originImages
         let (largeTiles, smallTiles) = tiles
         
-        let mosaic = MosaicImage.init(size: largeImage.size)
+        let mosaic = MosaicImage(size: largeImage.size)
         
-        let operationQueue = OperationQueue.init()
-        operationQueue.maxConcurrentOperationCount = 3
-        
+        let operationQueue = OperationQueue()
         
         let cgImage = smallImage.cgImage(forProposedRect: nil, context: nil, hints: nil)!
         let op = BlockOperation (block: {
@@ -48,12 +46,12 @@ class Mosaic: NSObject {
     }
     
     func buildMosaic(allLargeTiles: NSArray, largeImage: NSImage) {
-        let mosaic = MosaicImage.init(size: largeImage.size)
+        let mosaic = MosaicImage(size: largeImage.size)
         mosaic.addTileAndSave(tiles: allLargeTiles)
     }
     
     func fitTiles(allSmallTiles: NSArray) {
-        let tileFitter = TileFitter.init(tilesData: allSmallTiles)
+        let tileFitter = TileFitter(tilesData: allSmallTiles)
         let allTilesPixelData = tileFitter.getAllTilesPixelData(tiles: allSmallTiles)
         while work_queue.count > 0 {
             let (smallImageCropData, large_box) = work_queue.object(at: 0) as! (NSImage, CGRect)
@@ -82,8 +80,8 @@ class TileProcessor: NSObject {
     }
     
     func getTiles(tiles: NSArray) -> (largeTiles: NSArray, smallTiles: NSArray) {
-        let large_tiles = NSMutableArray.init()
-        let small_tiles = NSMutableArray.init()
+        let large_tiles = NSMutableArray()
+        let small_tiles = NSMutableArray()
         for tile in tiles {
             let tilesArray = processTile(image: tile as! NSImage)
             large_tiles.add(tilesArray.firstObject!)
@@ -154,7 +152,7 @@ class TileFitter: NSObject {
     }
     
     func getAllTilesPixelData(tiles: NSArray) -> NSArray {
-        let allTilesPixelData = NSMutableArray.init()
+        let allTilesPixelData = NSMutableArray()
         
         for tile in tiles {
             let pixel = (tile as! NSImage).pixelData()
@@ -196,7 +194,7 @@ class MosaicImage: NSObject {
         let imageData = bitmap.representation(using: NSJPEGFileType, properties: [NSImageCompressionFactor: 0.5])!
         do {
             let filePath = "file:///Users/"+NSUserName()+"/Pictures/mosaic.jpeg"
-            try imageData.write(to: NSURL.init(string: filePath) as! URL)
+            try imageData.write(to: NSURL(string: filePath) as! URL)
             let workspace = NSWorkspace.shared()
             workspace.openFile(NSHomeDirectory()+"/Pictures/mosaic.jpeg")
         } catch {
@@ -207,14 +205,14 @@ class MosaicImage: NSObject {
 
 func cropImage(image: CGImage, rect: CGRect) -> NSImage {
     let img = image.cropping(to: rect)
-    return NSImage.init(cgImage: img!, size: rect.size)
+    return NSImage(cgImage: img!, size: rect.size)
 }
 
 extension NSImage {
     func save() {
         var imageData = self.tiffRepresentation
-        let imageRef = NSBitmapImageRep.init(data: imageData!)
-        let imageProps = NSDictionary.init(object: NSNumber.init(value: 0.5), forKey: NSImageCompressionFactor as NSCopying)
+        let imageRef = NSBitmapImageRep(data: imageData!)
+        let imageProps = NSDictionary(object: NSNumber(value: 0.5), forKey: NSImageCompressionFactor as NSCopying)
         imageData = imageRef?.representation(using: NSJPEGFileType, properties: imageProps as! [String : Any])
         do {
             let date = Date()
@@ -224,14 +222,14 @@ extension NSImage {
             let second = calendar.component(.second, from: date)
             let random = arc4random()%1000
             let time = "\(hour)-\(minutes)-\(second).\(random)"
-            try imageData?.write(to: NSURL.init(string: "file:///Users/Michael/Desktop/image/\(time).jpeg") as! URL)
+            try imageData?.write(to: NSURL(string: "file:///Users/Michael/Desktop/image/\(time).jpeg") as! URL)
         } catch {
             print(error)
         }
     }
     
     func pixelData() -> [Pixel] {
-        let bmp = NSBitmapImageRep.init(data: self.tiffRepresentation!)!
+        let bmp = NSBitmapImageRep(data: self.tiffRepresentation!)!
         var data: UnsafeMutablePointer<UInt8> = bmp.bitmapData!
         var r, g, b, a: Int
         var pixels: [Pixel] = []

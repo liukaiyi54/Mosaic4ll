@@ -11,7 +11,7 @@ import Cocoa
 class ViewController: NSViewController {
     struct Variables {
         static var targetImage: NSImage? = nil
-        static var tiles = NSMutableArray.init()
+        static var tiles = NSMutableArray()
     }
 
     override func viewDidLoad() {
@@ -35,12 +35,12 @@ class ViewController: NSViewController {
         openPanel.canChooseDirectories = true
         openPanel.canCreateDirectories = false
         openPanel.canChooseFiles = true
-        openPanel.directoryURL = URL.init(fileURLWithPath: NSHomeDirectory()+"/Desktop")
+        openPanel.directoryURL = URL(fileURLWithPath: NSHomeDirectory()+"/Desktop")
         openPanel.allowedFileTypes = ["jpeg", "jpg"]
         openPanel.begin { (i) in
             if i == NSModalResponseOK {
                 print(openPanel.url!)
-                ViewController.Variables.targetImage = NSImage.init(contentsOfFile: openPanel.url!.path)!
+                ViewController.Variables.targetImage = NSImage(contentsOfFile: openPanel.url!.path)!
                 self.imageView.image = ViewController.Variables.targetImage
             }
         }
@@ -70,13 +70,13 @@ class ViewController: NSViewController {
         openPanel.canChooseDirectories = true
         openPanel.canCreateDirectories = false
         openPanel.canChooseFiles = true
-        openPanel.directoryURL = URL.init(fileURLWithPath: NSHomeDirectory()+"/Desktop")
+        openPanel.directoryURL = URL(fileURLWithPath: NSHomeDirectory()+"/Desktop")
         openPanel.allowedFileTypes = ["jpeg", "jpg"]
         openPanel.begin { (i) in
             if i == NSModalResponseOK {
                 print(openPanel.urls)
                 for url in openPanel.urls {
-                    let image = NSImage.init(contentsOfFile: url.path)
+                    let image = NSImage(contentsOfFile: url.path)
                     ViewController.Variables.tiles.add(image!)
                 }
                 self.label.stringValue = "added \(openPanel.urls.count) tiles"
