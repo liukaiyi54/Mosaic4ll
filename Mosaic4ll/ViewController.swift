@@ -19,7 +19,6 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         label.stringValue = ""
-        scaleLabel.stringValue = "4"
     }
 
     override var representedObject: Any? {
@@ -30,7 +29,6 @@ class ViewController: NSViewController {
     
     @IBOutlet weak var imageView: NSImageView!
     @IBOutlet weak var label: NSTextField!
-    @IBOutlet weak var scaleLabel: NSTextField!
     let progressIndicator = NSProgressIndicator()
     
     
@@ -48,10 +46,6 @@ class ViewController: NSViewController {
                 self.imageView.image = ViewController.Variables.targetImage
             }
         }
-    }
-    
-    @IBAction func didChangeValue(_ sender: NSStepper) {
-        
     }
     
     @IBAction func compose(_ sender: NSButton) {

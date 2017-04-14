@@ -738,7 +738,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="XfG-lQ-9wD" name="value" keyPath="scale" id="3gs-Ir-fSU"/>
+                                    <binding destination="XfG-lQ-9wD" name="value" keyPath="scale" id="e0y-af-Eg8"/>
                                 </connections>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kN8-Cs-TQY">
@@ -785,7 +785,6 @@
                     <connections>
                         <outlet property="imageView" destination="7jZ-bz-wSe" id="pkl-iS-xB6"/>
                         <outlet property="label" destination="YD9-w2-h7i" id="XkO-TS-wWg"/>
-                        <outlet property="scaleLabel" destination="daw-Mh-X1i" id="P0V-hP-cam"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

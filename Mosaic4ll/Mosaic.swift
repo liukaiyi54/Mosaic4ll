@@ -100,7 +100,7 @@ class TileProcessor: NSObject {
         return (largeImage, smallImage)
     }
     
-    func getTiles(tiles: NSArray) -> (largeTiles: NSArray, smallTiles: NSArray) {
+    func getTiles(tiles: NSArray) -> (NSArray, NSArray) {
         let large_tiles = NSMutableArray()
         let small_tiles = NSMutableArray()
         for tile in tiles {
@@ -113,7 +113,7 @@ class TileProcessor: NSObject {
 }
 
 class TargetImage: NSObject {
-    func getImageData(image: NSImage, scale: UInt) -> (largeImage: NSImage, smallImage: NSImage) {
+    func getImageData(image: NSImage, scale: UInt) -> (NSImage, NSImage) {
         let width = image.size.width*CGFloat(scale)
         let height = image.size.height*CGFloat(scale)
         var largeImage = image
