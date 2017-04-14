@@ -55,17 +55,6 @@ class Mosaic: NSObject {
         let mosaic = MosaicImage(size: largeImage.size)
         mosaic.addTileAndSave(tiles: allLargeTiles)
     }
-    
-    func fitTiles(allSmallTiles: NSArray) {
-        let tileFitter = TileFitter(tilesData: allSmallTiles)
-        let allTilesPixelData = tileFitter.getAllTilesPixelData(tiles: allSmallTiles)
-        while work_queue.count > 0 {
-            let (smallImageCropData, large_box) = work_queue.object(at: 0) as! (NSImage, CGRect)
-            work_queue.removeObject(at: 0)
-            let tileIndex = tileFitter.getBestFitTile(image: smallImageCropData, allTiles: allTilesPixelData)
-            result_queue.add((large_box, tileIndex))
-        }
-    }
 }
 
 class MosaicBuildPrework: Operation {
@@ -123,9 +112,9 @@ class TileProcessor: NSObject {
 }
 
 class TargetImage: NSObject {
-    func getImageData(image: NSImage) -> (largeImage: NSImage, smallImage: NSImage) {
-        let width = image.size.width*4
-        let height = image.size.height*4
+    func getImageData(image: NSImage, scale: UInt) -> (largeImage: NSImage, smallImage: NSImage) {
+        let width = image.size.width*CGFloat(scale)
+        let height = image.size.height*CGFloat(scale)
         var largeImage = image
         let width_diff = width.truncatingRemainder(dividingBy: 50)/2
         let height_diff = height.truncatingRemainder(dividingBy: 50)/2

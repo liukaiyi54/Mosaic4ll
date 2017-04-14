@@ -9,6 +9,8 @@
 import Cocoa
 
 class ViewController: NSViewController {
+    var scale: UInt = 4
+    
     struct Variables {
         static var targetImage: NSImage? = nil
         static var tiles = NSMutableArray()
@@ -16,7 +18,8 @@ class ViewController: NSViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        label.stringValue = " "
+        label.stringValue = ""
+        scaleLabel.stringValue = "4"
     }
 
     override var representedObject: Any? {
@@ -27,6 +30,7 @@ class ViewController: NSViewController {
     
     @IBOutlet weak var imageView: NSImageView!
     @IBOutlet weak var label: NSTextField!
+    @IBOutlet weak var scaleLabel: NSTextField!
     let progressIndicator = NSProgressIndicator()
     
     
@@ -40,11 +44,14 @@ class ViewController: NSViewController {
         openPanel.allowedFileTypes = ["jpeg", "jpg"]
         openPanel.begin { (i) in
             if i == NSModalResponseOK {
-                print(openPanel.url!)
                 ViewController.Variables.targetImage = NSImage(contentsOfFile: openPanel.url!.path)!
                 self.imageView.image = ViewController.Variables.targetImage
             }
         }
+    }
+    
+    @IBAction func didChangeValue(_ sender: NSStepper) {
+        
     }
     
     @IBAction func compose(_ sender: NSButton) {
@@ -72,18 +79,16 @@ class ViewController: NSViewController {
         let tiles_data = processor.getTiles(tiles: ViewController.Variables.tiles)
         
         let targetImage = TargetImage()
-        let image_data = targetImage.getImageData(image: ViewController.Variables.targetImage!)
+        let image_data = targetImage.getImageData(image: ViewController.Variables.targetImage!, scale: scale)
         
 
         mosaic.compose(originImages: image_data, tiles: tiles_data, complete: {
-            let operationQueue = OperationQueue.main
-            let operation = BlockOperation (block: {
+            OperationQueue.main.addOperation {
                 alert.messageText = "Finished!"
                 alert.informativeText = ""
                 let button = alert.buttons[0]
                 button.title = "OK"
-            })
-            operationQueue.addOperation(operation)
+            }
         })
     }
     
@@ -97,7 +102,6 @@ class ViewController: NSViewController {
         openPanel.allowedFileTypes = ["jpeg", "jpg"]
         openPanel.begin { (i) in
             if i == NSModalResponseOK {
-                print(openPanel.urls)
                 for url in openPanel.urls {
                     let image = NSImage(contentsOfFile: url.path)
                     ViewController.Variables.tiles.add(image!)
