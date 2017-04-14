@@ -697,7 +697,7 @@
                                 </connections>
                             </button>
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7jZ-bz-wSe">
-                                <rect key="frame" x="20" y="41" width="112" height="168"/>
+                                <rect key="frame" x="17" y="41" width="112" height="168"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="112" id="580-fy-YCq"/>
                                     <constraint firstAttribute="height" constant="168" id="RmQ-a0-eGW"/>
@@ -741,7 +741,7 @@
                             <constraint firstItem="YD9-w2-h7i" firstAttribute="centerX" secondItem="XiO-ko-sHu" secondAttribute="centerX" id="PfY-MP-dxu"/>
                             <constraint firstItem="YD9-w2-h7i" firstAttribute="top" secondItem="XiO-ko-sHu" secondAttribute="bottom" constant="86" id="Rmg-wp-ZVD"/>
                             <constraint firstItem="7jZ-bz-wSe" firstAttribute="centerY" secondItem="m2S-Jp-Qdl" secondAttribute="centerY" constant="10" id="SD0-22-tjg"/>
-                            <constraint firstItem="7jZ-bz-wSe" firstAttribute="centerX" secondItem="m2S-Jp-Qdl" secondAttribute="centerX" constant="-164" id="YkA-Cg-2ok"/>
+                            <constraint firstItem="7jZ-bz-wSe" firstAttribute="centerX" secondItem="Py6-01-U2W" secondAttribute="centerX" id="Xcl-zV-rSW"/>
                             <constraint firstAttribute="trailing" secondItem="hID-Tt-MGw" secondAttribute="trailing" constant="20" id="gqE-0h-WjQ"/>
                             <constraint firstItem="hID-Tt-MGw" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" id="tTX-xx-i1Z"/>
                         </constraints>
