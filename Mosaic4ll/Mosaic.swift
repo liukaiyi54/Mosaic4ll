@@ -36,6 +36,7 @@ class Mosaic: NSObject {
         
         let mosaicBuildPrework = MosaicBuildPrework(allTiles: smallTiles)
         mosaicBuildPrework.name = "Prework"
+        mosaicBuildPrework.addDependency(op)
         mosaicBuildPrework.completionBlock = {
             if mosaicBuildPrework.isCancelled {
                 return
