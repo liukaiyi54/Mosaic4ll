@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16F43c" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16F54b" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
@@ -726,7 +726,6 @@
                                 <rect key="frame" x="109" y="18" width="19" height="27"/>
                                 <stepperCell key="cell" continuous="YES" alignment="left" increment="2" minValue="2" maxValue="8" doubleValue="2" id="icb-3v-kdW"/>
                                 <connections>
-                                    <action selector="didChangeValue:" target="XfG-lQ-9wD" id="Jye-YN-mSj"/>
                                     <binding destination="XfG-lQ-9wD" name="value" keyPath="scale" id="QOT-o3-Dez"/>
                                 </connections>
                             </stepper>
@@ -790,7 +789,7 @@
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <userDefaultsController representsSharedInstance="YES" id="yN7-Ae-zad"/>
             </objects>
-            <point key="canvasLocation" x="88.5" y="670.5"/>
+            <point key="canvasLocation" x="75" y="733"/>
         </scene>
     </scenes>
 </document>

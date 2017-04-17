@@ -10,6 +10,7 @@ import Cocoa
 
 class ViewController: NSViewController {
     var scale: UInt = 4
+    let indicator = KRActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 60, height: 60), type: .ballTrianglePath, color:  NSColor(red:0.23, green:0.78, blue:0.32, alpha:1.0), padding: 10.0)
     
     struct Variables {
         static var targetImage: NSImage? = nil
@@ -63,9 +64,12 @@ class ViewController: NSViewController {
         alert.informativeText = "Just so you know, this may take a while"
         alert.addButton(withTitle: "Cancel")
         alert.alertStyle = .informational
+        alert.accessoryView = indicator
+        indicator.startAnimating()
         alert.beginSheetModal(for: self.view.window!) { (reponse) in
             if reponse == 1000 && alert.buttons[0].title == "Cancel"{
                 mosaic.cancelOperation()
+                self.indicator.stopAnimating()
             }
         }
         
@@ -78,10 +82,14 @@ class ViewController: NSViewController {
 
         mosaic.compose(originImages: image_data, tiles: tiles_data, complete: {
             OperationQueue.main.addOperation {
+                self.view.window?.endSheet(alert.window)
+                
+                let alert = NSAlert()
                 alert.messageText = "Finished!"
                 alert.informativeText = ""
-                let button = alert.buttons[0]
-                button.title = "OK"
+                alert.accessoryView = nil
+                alert.beginSheetModal(for: self.view.window!, completionHandler: nil)
+                self.indicator.stopAnimating()
             }
         })
     }
@@ -100,7 +108,7 @@ class ViewController: NSViewController {
                     let image = NSImage(contentsOfFile: url.path)
                     ViewController.Variables.tiles.add(image!)
                 }
-                self.label.stringValue = "added \(openPanel.urls.count) tiles"
+                self.label.stringValue = "added \(ViewController.Variables.tiles.count) tiles"
             }
         }
     }
