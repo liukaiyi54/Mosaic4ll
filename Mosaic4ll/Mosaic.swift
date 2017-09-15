@@ -215,7 +215,7 @@ class MosaicImage: NSObject {
         let imageData = bitmap.representation(using: NSJPEGFileType, properties: [NSImageCompressionFactor: 0.5])!
         do {
             let filePath = "file://"+NSHomeDirectory()+"/Pictures/mosaic.jpeg"
-            try imageData.write(to: NSURL(string: filePath) as! URL)
+            try imageData.write(to: NSURL(string: filePath)! as URL)
             let workspace = NSWorkspace.shared()
             workspace.openFile(NSHomeDirectory()+"/Pictures/mosaic.jpeg")
         } catch {

@@ -20,6 +20,9 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         label.stringValue = ""
+        self.imageView.layer?.cornerRadius = 4.0
+        self.imageView.layer?.borderWidth = 1.0
+        self.imageView.layer?.borderColor = NSColor.gray.cgColor
     }
 
     override var representedObject: Any? {
