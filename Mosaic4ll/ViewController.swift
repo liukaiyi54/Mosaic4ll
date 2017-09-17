@@ -20,6 +20,7 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         label.stringValue = ""
+        self.imageView.wantsLayer = true
         self.imageView.layer?.cornerRadius = 4.0
         self.imageView.layer?.borderWidth = 1.0
         self.imageView.layer?.borderColor = NSColor.gray.cgColor
@@ -28,6 +29,7 @@ class ViewController: NSViewController {
     override var representedObject: Any? {
         didSet {
         // Update the view, if already loaded.
+            
         }
     }
     
@@ -82,7 +84,6 @@ class ViewController: NSViewController {
         let targetImage = TargetImage()
         let image_data = targetImage.getImageData(image: ViewController.Variables.targetImage!, scale: scale)
         
-
         mosaic.compose(originImages: image_data, tiles: tiles_data, complete: {
             OperationQueue.main.addOperation {
                 self.view.window?.endSheet(alert.window)
@@ -115,5 +116,6 @@ class ViewController: NSViewController {
             }
         }
     }
+    
 }
 

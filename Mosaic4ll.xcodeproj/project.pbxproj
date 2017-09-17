@@ -48,6 +48,7 @@
 		4C84308F1E8DE6F2008ABE0E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C84308E1E8DE6F2008ABE0E /* Assets.xcassets */; };
 		4C8430921E8DE6F2008ABE0E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C8430901E8DE6F2008ABE0E /* Main.storyboard */; };
 		4C84309A1E8DE8B7008ABE0E /* Mosaic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8430991E8DE8B7008ABE0E /* Mosaic.swift */; };
+		4CE237711F6BBA460052A04E /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE237701F6BBA460052A04E /* Image.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -96,6 +97,7 @@
 		4C8430931E8DE6F2008ABE0E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C8430991E8DE8B7008ABE0E /* Mosaic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mosaic.swift; sourceTree = "<group>"; };
 		4CA7FC2B1E94E5C40050A6F8 /* Mosaic4ll.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Mosaic4ll.entitlements; sourceTree = "<group>"; };
+		4CE237701F6BBA460052A04E /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,6 +179,7 @@
 				4C84308A1E8DE6F2008ABE0E /* AppDelegate.swift */,
 				4C84308C1E8DE6F2008ABE0E /* ViewController.swift */,
 				4C8430991E8DE8B7008ABE0E /* Mosaic.swift */,
+				4CE237701F6BBA460052A04E /* Image.swift */,
 				4C84308E1E8DE6F2008ABE0E /* Assets.xcassets */,
 				4C8430901E8DE6F2008ABE0E /* Main.storyboard */,
 				4C8430931E8DE6F2008ABE0E /* Info.plist */,
@@ -284,6 +287,7 @@
 				4C3BBA421EA46F2500370CE2 /* KRActivityIndicatorShape.swift in Sources */,
 				4C84308D1E8DE6F2008ABE0E /* ViewController.swift in Sources */,
 				4C3BBA3E1EA46F2500370CE2 /* KRActivityIndicatorAnimationPacman.swift in Sources */,
+				4CE237711F6BBA460052A04E /* Image.swift in Sources */,
 				4C3BBA261EA46F2500370CE2 /* KRActivityIndicatorAnimationBallGridBeat.swift in Sources */,
 				4C3BBA401EA46F2500370CE2 /* KRActivityIndicatorAnimationSquareSpin.swift in Sources */,
 				4C3BBA381EA46F2500370CE2 /* KRActivityIndicatorAnimationLineScale.swift in Sources */,
