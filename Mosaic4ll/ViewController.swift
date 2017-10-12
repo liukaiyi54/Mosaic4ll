@@ -66,7 +66,7 @@ class ViewController: NSViewController {
         
         let alert = NSAlert()
         alert.messageText = "Composing..."
-        alert.informativeText = "Just so you know, this may take a while"
+        alert.informativeText = "Just so you know, this might take a while, but it's worth it."
         alert.addButton(withTitle: "Cancel")
         alert.alertStyle = .informational
         alert.accessoryView = indicator
